@@ -18,17 +18,18 @@ class MarvelService {
         return md5(timeStamp + '34e8350864fdfff1b14ed01f74023423dc2a3d80' + '1a52cb7d60fa7704cf0638d5fb3ca8f4');
     }
 
-    getAllCharacters = () => {
+    getAllCharacters = async () => {
         const timeStamp = +new Date();
         const hash = this.getHash(timeStamp);
 
-        return this.getResources(
-             this._url + '?' +
-            'limit=9&offset=210' +
+        const res = await this.getResources(
+            this._url + '?' +
+            'limit=20&offset=210' +
             '&ts=' + timeStamp +
             '&apikey=' + this._apikey +
             '&hash=' + hash
         );
+        return res.data.results.map(this._transformCharacter);
     }
 
     getCharacter = async (id) => {
@@ -42,16 +43,18 @@ class MarvelService {
             '&hash=' + hash
         );
 
-        return this._transformCharacter(result);
+        return this._transformCharacter(result.data.results[0]);
     }
 
     _transformCharacter = (response) => {
         return {
-            name: response.data.results[0].name,
-            description: response.data.results[0].description,
-            thumbnail: `${response.data.results[0].thumbnail.path}.${response.data.results[0].thumbnail.extension}`,
-            homepage: response.data.results[0].urls[0].url,
-            wiki: response.data.results[0].urls[1].url
+            id: response.id,
+            name: response.name,
+            description: response.description,
+            thumbnail: `${response.thumbnail.path}.${response.thumbnail.extension}`,
+            homepage: response.urls[0].url,
+            wiki: response.urls[1].url,
+            comics: response.comics.items
         }
     }
 }

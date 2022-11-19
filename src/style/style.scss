@@ -9,6 +9,10 @@
     box-sizing: border-box;
 }
 
+body {
+    background-color: $body-color;
+}
+
 ul,
 li,
 dl {
@@ -80,3 +84,16 @@ main {
         opacity: 1
     }
 }
+
+.preloader, .error {
+    position: relative;
+    &__img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}
+
