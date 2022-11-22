@@ -6,7 +6,6 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton'
 
 import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
 
 class CharInfo extends Component {
     state = {
@@ -39,6 +38,11 @@ class CharInfo extends Component {
         if (this.props.charId !== prevProps.charId) {
             this.updateChar();
         }
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.log(error, errorInfo);
+        this.setState({error: true})
     }
 
     onCharLoaded = (character) => {

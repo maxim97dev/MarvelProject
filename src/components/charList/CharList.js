@@ -11,6 +11,7 @@ class CharList extends Component {
 
     state = {
         charList: [],
+        page: 1,
         loading: true,
         error: false
     }
@@ -28,6 +29,25 @@ class CharList extends Component {
             charList,
             loading: false
         })
+    }
+
+    onCharListLazy = (charListPage) => {
+        const newChars = [...this.state.charList, ...charListPage];
+
+        this.setState(state => ({
+            charList: newChars,
+            page: state.page + 1,
+            loading: false
+        }))
+    }
+
+    updatePage = () => {
+        const page = this.state.page;
+
+        this.marvelService
+            .getPageCharacters(page)
+            .then(this.onCharListLazy)
+            .catch(this.onError)
     }
 
     onError = () => {
@@ -68,7 +88,7 @@ class CharList extends Component {
 
     render() {
 
-        const {charList, loading, error} = this.state;
+        const { charList, loading, error } = this.state;
 
         const items = this.renderItems(charList);
 
@@ -81,7 +101,7 @@ class CharList extends Component {
                 {errorMessage}
                 {spinner}
                 {content}
-                <button className="button button__main button__long">
+                <button onClick={this.updatePage} className="button button__main button__long">
                     <div className="inner">load more</div>
                 </button>
             </div>

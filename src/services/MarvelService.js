@@ -24,7 +24,22 @@ class MarvelService {
 
         const res = await this.getResources(
             this._url + '?' +
-            'limit=20&offset=210' +
+            'limit=10&offset=10' +
+            '&ts=' + timeStamp +
+            '&apikey=' + this._apikey +
+            '&hash=' + hash
+        );
+        return res.data.results.map(this._transformCharacter);
+    }
+
+    getPageCharacters = async (num) => {
+        const timeStamp = +new Date();
+        const hash = this.getHash(timeStamp);
+        const pagination = ++num;
+
+        const res = await this.getResources(
+            this._url + '?' +
+            'limit=' + 10  + '&offset=' + (pagination + '0') +
             '&ts=' + timeStamp +
             '&apikey=' + this._apikey +
             '&hash=' + hash
