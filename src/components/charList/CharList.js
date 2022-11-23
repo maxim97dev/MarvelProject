@@ -4,50 +4,44 @@ import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
-
 import './charList.scss';
 
 class CharList extends Component {
 
     state = {
         charList: [],
-        page: 1,
         loading: true,
-        error: false
+        error: false,
+        lazyLoad: false,
+        offset: 10
     }
 
     marvelService = new MarvelService();
 
     componentDidMount() {
-        this.marvelService.getAllCharacters()
+        this.onRequest();
+    }
+
+    onRequest = (offset) => {
+        this.onCharListLoading();
+        this.marvelService.getAllCharacters(offset)
             .then(this.onCharListLoaded)
             .catch(this.onError)
     }
 
-    onCharListLoaded = (charList) => {
+    onCharListLoading = () => {
         this.setState({
-            charList,
-            loading: false
+            lazyLoad: true
         })
     }
 
-    onCharListLazy = (charListPage) => {
-        const newChars = [...this.state.charList, ...charListPage];
-
-        this.setState(state => ({
-            charList: newChars,
-            page: state.page + 1,
-            loading: false
-        }))
-    }
-
-    updatePage = () => {
-        const page = this.state.page;
-
-        this.marvelService
-            .getPageCharacters(page)
-            .then(this.onCharListLazy)
-            .catch(this.onError)
+    onCharListLoaded = (charListNew) => {
+        this.setState(({offset, charList}) => ({
+            charList: [...charList, ...charListNew],
+            loading: false,
+            lazyLoad: false,
+            offset: offset + 10
+        }));
     }
 
     onError = () => {
@@ -88,7 +82,7 @@ class CharList extends Component {
 
     render() {
 
-        const { charList, loading, error } = this.state;
+        const { charList, loading, error, offset, lazyLoad } = this.state;
 
         const items = this.renderItems(charList);
 
@@ -101,8 +95,11 @@ class CharList extends Component {
                 {errorMessage}
                 {spinner}
                 {content}
-                <button onClick={this.updatePage} className="button button__main button__long">
-                    <div className="inner">load more</div>
+                <button className="button button__main button__long"
+                        disabled={lazyLoad}
+                        onClick={() => this.onRequest(offset)}
+                >
+                    <div className="inner">{lazyLoad ? 'Wait' : 'Load More'}</div>
                 </button>
             </div>
         )

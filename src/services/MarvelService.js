@@ -2,7 +2,8 @@ import md5 from "blueimp-md5";
 
 class MarvelService {
     _url = 'https://gateway.marvel.com/v1/public/characters';
-    _apikey = '1a52cb7d60fa7704cf0638d5fb3ca8f4';
+    _apiKey = '1a52cb7d60fa7704cf0638d5fb3ca8f4';
+    _baseOffset = 10;
 
     getResources = async(url) => {
         let response = await fetch(url);
@@ -18,31 +19,17 @@ class MarvelService {
         return md5(timeStamp + '34e8350864fdfff1b14ed01f74023423dc2a3d80' + '1a52cb7d60fa7704cf0638d5fb3ca8f4');
     }
 
-    getAllCharacters = async () => {
+    getAllCharacters = async (offset = this._baseOffset) => {
         const timeStamp = +new Date();
         const hash = this.getHash(timeStamp);
 
         const res = await this.getResources(
-            this._url + '?' +
-            'limit=10&offset=10' +
-            '&ts=' + timeStamp +
-            '&apikey=' + this._apikey +
-            '&hash=' + hash
-        );
-        return res.data.results.map(this._transformCharacter);
-    }
-
-    getPageCharacters = async (num) => {
-        const timeStamp = +new Date();
-        const hash = this.getHash(timeStamp);
-        const pagination = ++num;
-
-        const res = await this.getResources(
-            this._url + '?' +
-            'limit=' + 10  + '&offset=' + (pagination + '0') +
-            '&ts=' + timeStamp +
-            '&apikey=' + this._apikey +
-            '&hash=' + hash
+            this._url +
+            '?limit=' + 10 +
+            '&offset='+ offset +
+            '&ts='    + timeStamp +
+            '&apikey='+ this._apiKey +
+            '&hash='  + hash
         );
         return res.data.results.map(this._transformCharacter);
     }
@@ -53,9 +40,9 @@ class MarvelService {
 
         const result = await this.getResources(
             this._url + '/' + id + '?' +
-            '&ts=' + timeStamp +
-            '&apikey=' + this._apikey +
-            '&hash=' + hash
+            '&ts='    + timeStamp +
+            '&apikey='+ this._apiKey +
+            '&hash='  + hash
         );
 
         return this._transformCharacter(result.data.results[0]);
