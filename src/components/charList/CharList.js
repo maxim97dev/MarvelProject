@@ -3,8 +3,10 @@ import { Component } from 'react';
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import CardSkeleton from "../cardSkeleton/CardSkeleton";
 
 import './charList.scss';
+
 
 class CharList extends Component {
 
@@ -87,14 +89,14 @@ class CharList extends Component {
         const items = this.renderItems(charList);
 
         const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? items : null;
+        const content = !(loading || error) ? items : <CardSkeleton/>;
+        const contentLazy = lazyLoad ? <CardSkeleton/> : null;
 
         return (
             <div className="char__list">
                 {errorMessage}
-                {spinner}
                 {content}
+                {contentLazy}
                 <button className="button button__main button__long"
                         disabled={lazyLoad}
                         onClick={() => this.onRequest(offset)}
